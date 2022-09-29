@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">sample_nav</string>
+    <string name="title_home">긴급위치전송어플</string>
+    <string name="title_dashboard">대시보드</string>
+    <string name="title_notifications">프로필</string>
+    <string name="emergency_botton_text">눌러!</string>
+    <string name="emergency_text">위급상황 발생 시 버튼을 눌러주세요!</string>
+</resources>
