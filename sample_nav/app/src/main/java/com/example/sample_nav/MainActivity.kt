@@ -1,5 +1,4 @@
 package com.example.sample_nav
-
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -21,14 +20,13 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.sample_nav.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private val permissionId = 2
+    private val PERMISSION_ID = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +34,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-
         val navView: BottomNavigationView = binding.navView
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
@@ -69,14 +66,6 @@ class MainActivity : AppCompatActivity() {
         toast.show()
     }
 
-    private fun isLocationEnabled(): Boolean {
-        val locationManager: LocationManager =
-            getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
-
     private fun checkPermissions(): Boolean {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -98,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ),
-            permissionId
+            PERMISSION_ID
         )
     }
     @SuppressLint("MissingSuperCall")
@@ -107,11 +96,19 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == permissionId) {
+        if (requestCode == PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 getLocation()
             }
         }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
     @SuppressLint("MissingPermission", "SetTextI18n")
@@ -121,28 +118,21 @@ class MainActivity : AppCompatActivity() {
                 mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
                     val location: Location? = task.result
                     if (location != null) {
-                        val geocoder = Geocoder(this, Locale.getDefault())
-                        val list: List<Address> =
-                            geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                        binding.apply {
-                            tvLatitude.text = "Latitude\n${list[0].latitude}"
-                            tvLongitude.text = "Longitude\n${list[0].longitude}"
-                            tvCountryName.text = "Country Name\n${list[0].countryName}"
-                            tvLocality.text = "Locality\n${list[0].locality}"
-                            tvAddress.text = "Address\n${list[0].getAddressLine(0)}"
-                        }
+                        findViewById<TextView>(R.id.tv_Latitude).text = location.latitude.toString()
+                        findViewById<TextView>(R.id.tv_Longitude).text = location.longitude.toString()
+                        print("현재 위치를 찾았음")
                     }
                 }
             } else {
                 Toast.makeText(this, "Please turn on location", Toast.LENGTH_LONG).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
+                print("현재 위치를 찾기 힘듭니다.")
             }
         } else {
             requestPermissions()
         }
     }
-
 }
 
 
